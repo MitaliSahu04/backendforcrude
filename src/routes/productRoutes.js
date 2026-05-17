@@ -16,7 +16,7 @@ const {
   getProduct,
   updateProduct,
   deleteProduct,
-} = require(
+  } = require(
   "../controllers/productController"
 );
 
@@ -28,7 +28,7 @@ router.get("/:id", getProduct);
 
 router.post(
   "/",
-  upload.single("image"),
+   upload.single("image"),
   createProduct
 );
 

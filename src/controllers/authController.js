@@ -4,7 +4,17 @@ const bcrypt = require("bcryptjs");
 
 const jwt = require("jsonwebtoken");
 
-
+const generateToken = (user) => {
+  return jwt.sign(
+    {
+      id: user._id,
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "7d",
+    }
+  );
+};
 exports.register = async (
   req,
   res
@@ -14,7 +24,6 @@ exports.register = async (
       name,
       email,
       password,
-      role,
     } = req.body;
 
     const existingUser =
@@ -24,7 +33,7 @@ exports.register = async (
       return res.status(400).json({
         message:
           "User already exists",
-      });
+              });
     }
 
     const hashedPassword =
@@ -43,7 +52,7 @@ exports.register = async (
     res.status(500).json({
       message: error.message,
     });
-  }
+     }
 };
 
 exports.login = async (
@@ -62,7 +71,7 @@ exports.login = async (
         message:
           "Invalid credentials",
       });
-    }
+       }
 
     const isMatch =
       await bcrypt.compare(
@@ -79,15 +88,9 @@ exports.login = async (
 
     res.json({
       token: generateToken(user),
-
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-      },
     });
   } catch (error) {
-    res.status(500).json({
+      res.status(500).json({
       message: error.message,
     });
   }

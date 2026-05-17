@@ -14,7 +14,6 @@ if (!fs.existsSync(uploadPath)) {
     recursive: true,
   });
 }
-
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, uploadPath);
@@ -30,26 +29,6 @@ const storage = multer.diskStorage({
   },
 });
 
-const fileFilter = (
-  req,
-  file,
-  cb
-) => {
-  if (
-    file.mimetype.startsWith("image/")
-  ) {
-    cb(null, true);
-  } else {
-    cb(
-      new Error("Only images allowed"),
-      false
-    );
-  }
-};
-
-const upload = multer({
-  storage,
-  fileFilter,
-});
+const upload = multer({ storage });
 
 module.exports = upload;

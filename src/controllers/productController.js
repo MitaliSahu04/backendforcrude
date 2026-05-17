@@ -1,4 +1,6 @@
-const Product = require("../models/Product");
+const Product = require(
+  "../models/Product"
+);
 
 exports.createProduct = async (
   req,
@@ -15,7 +17,7 @@ exports.createProduct = async (
           req.body.description,
 
         image: req.file
-          ? req.file.filename
+                  ? req.file.filename
           : "",
       });
 
@@ -26,7 +28,6 @@ exports.createProduct = async (
     });
   }
 };
-
 exports.getProducts = async (
   req,
   res
@@ -45,7 +46,7 @@ exports.getProducts = async (
         $regex: search,
         $options: "i",
       },
-    };
+       };
 
     const total =
       await Product.countDocuments(
@@ -54,18 +55,13 @@ exports.getProducts = async (
 
     const products =
       await Product.find(query)
-        .populate(
-          "createdBy",
-          "name email role"
-        )
         .skip((page - 1) * limit)
         .limit(limit)
         .sort({ createdAt: -1 });
 
     res.json({
       products,
-
-      totalPages: Math.ceil(
+       totalPages: Math.ceil(
         total / limit
       ),
 
@@ -77,6 +73,7 @@ exports.getProducts = async (
     });
   }
 };
+
 
 exports.getProduct = async (
   req,
@@ -112,7 +109,7 @@ exports.updateProduct = async (
       });
     }
 
-    const updatedProduct =
+      const updatedProduct =
       await Product.findByIdAndUpdate(
         req.params.id,
         {
