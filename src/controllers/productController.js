@@ -17,8 +17,6 @@ exports.createProduct = async (
         image: req.file
           ? req.file.filename
           : "",
-
-        createdBy: req.user.id,
       });
 
     res.status(201).json(product);
@@ -114,16 +112,6 @@ exports.updateProduct = async (
       });
     }
 
-    if (
-      product.createdBy.toString() !==
-      req.user.id
-    ) {
-      return res.status(403).json({
-        message:
-          "You can only edit your own products",
-      });
-    }
-
     const updatedProduct =
       await Product.findByIdAndUpdate(
         req.params.id,
@@ -157,27 +145,6 @@ exports.deleteProduct = async (
   res
 ) => {
   try {
-    const product =
-      await Product.findById(
-        req.params.id
-      );
-
-    if (!product) {
-      return res.status(404).json({
-        message: "Product not found",
-      });
-    }
-
-    if (
-      product.createdBy.toString() !==
-      req.user.id
-    ) {
-      return res.status(403).json({
-        message:
-          "You can only delete your own products",
-      });
-    }
-
     await Product.findByIdAndDelete(
       req.params.id
     );

@@ -6,10 +6,6 @@ const protect = require(
   "../middleware/authMiddleware"
 );
 
-const admin = require(
-  "../middleware/adminMiddleware"
-);
-
 const upload = require(
   "../middleware/uploadMiddleware"
 );
@@ -32,21 +28,18 @@ router.get("/:id", getProduct);
 
 router.post(
   "/",
-  admin,
   upload.single("image"),
   createProduct
 );
 
 router.put(
   "/:id",
-  admin,
   upload.single("image"),
   updateProduct
 );
 
 router.delete(
   "/:id",
-  admin,
   deleteProduct
 );
 
