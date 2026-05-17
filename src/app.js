@@ -14,7 +14,16 @@ const productRoutes = require(
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://YOUR-FRONTEND.vercel.app",
+    ],
+
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
