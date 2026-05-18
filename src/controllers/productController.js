@@ -1,158 +1,79 @@
-const Product = require(
-  "../models/Product"
-);
+const Product = require('../models/Product');
 
-exports.createProduct = async (
-  req,
-  res
-) => {
+exports.createProduct = async (req, res) => {
   try {
-    const product =
-      await Product.create({
-        name: req.body.name,
-
-        price: req.body.price,
-
-        description:
-          req.body.description,
-
-        image: req.file
-                  ? req.file.filename
-          : "",
-      });
+    const product = await Product.create({
+      ...req.body,
+      image: req.file?.filename,
+      createdBy: req.user.id,
+    });
 
     res.status(201).json(product);
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    res.status(500).json({ message: error.message });
   }
 };
-exports.getProducts = async (
-  req,
-  res
-) => {
+exports.getProducts = async (req, res) => {
   try {
-    const page =
-      Number(req.query.page) || 1;
-
-    const limit = 6;
-
-    const search =
-      req.query.search || "";
+    const page = parseInt(req.query.page) || 1;
+    const limit = 5;
+    const search = req.query.search || '';
 
     const query = {
-      name: {
-        $regex: search,
-        $options: "i",
-      },
-       };
+      title: { $regex: search, $options: 'i' },
+    };
 
-    const total =
-      await Product.countDocuments(
-        query
-      );
+    const products = await Product.find(query)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort({ createdAt: -1 });
 
-    const products =
-      await Product.find(query)
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .sort({ createdAt: -1 });
+    const total = await Product.countDocuments(query);
+
 
     res.json({
       products,
-       totalPages: Math.ceil(
-        total / limit
-      ),
-
-      currentPage: page,
+      totalPages: Math.ceil(total / limit),
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    res.status(500).json({ message: error.message });
   }
 };
-
-
-exports.getProduct = async (
-  req,
-  res
-) => {
+exports.getSingleProduct = async (req, res) => {
   try {
-    const product =
-      await Product.findById(
-        req.params.id
-      );
+    const product = await Product.findById(req.params.id);
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
 
     res.json(product);
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    res.status(500).json({ message: error.message });
   }
 };
-
-exports.updateProduct = async (
-  req,
-  res
-) => {
+exports.updateProduct = async (req, res) => {
   try {
-    const product =
-      await Product.findById(
-        req.params.id
-      );
-
-    if (!product) {
-      return res.status(404).json({
-        message: "Product not found",
-      });
-    }
-
-      const updatedProduct =
-      await Product.findByIdAndUpdate(
-        req.params.id,
-        {
-          name: req.body.name,
-
-          price: req.body.price,
-
-          description:
-            req.body.description,
-
-          image: req.file
-            ? req.file.filename
-            : product.image,
-        },
-        {
-          returnDocument: "after",
-        }
-      );
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...req.body,
+        ...(req.file && { image: req.file.filename }),
+      },
+      { new: true }
+    );
 
     res.json(updatedProduct);
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    res.status(500).json({ message: error.message });
   }
 };
-
-exports.deleteProduct = async (
-  req,
-  res
-) => {
+exports.deleteProduct = async (req, res) => {
   try {
-    await Product.findByIdAndDelete(
-      req.params.id
-    );
+    await Product.findByIdAndDelete(req.params.id);
 
-    res.json({
-      message:
-        "Product deleted successfully",
-    });
+    res.json({ message: 'Product deleted successfully' });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    res.status(500).json({ message: error.message });
   }
 };

@@ -1,45 +1,66 @@
-const express = require("express");
+// backend/routes/productRoutes.js
+
+const express = require('express');
 
 const router = express.Router();
 
-const protect = require(
-  "../middleware/authMiddleware"
-);
+// Middleware
+const authMiddleware = require('../middleware/authMiddleware');
+const upload = require('../middleware/uploadMiddleware');
 
-const upload = require(
-  "../middleware/uploadMiddleware"
-);
-
+// Controllers
 const {
   createProduct,
   getProducts,
-  getProduct,
+  getSingleProduct,
   updateProduct,
   deleteProduct,
-  } = require(
-  "../controllers/productController"
+} = require('../controllers/productController');
+
+// ===============================
+// GET ALL PRODUCTS
+// ===============================
+router.get(
+  '/',
+  authMiddleware,
+  getProducts
 );
 
-router.use(protect);
+// ===============================
+// GET SINGLE PRODUCT
+// ===============================
+router.get(
+  '/:id',
+  authMiddleware,
+  getSingleProduct
+);
 
-router.get("/", getProducts);
-
-router.get("/:id", getProduct);
-
+// ===============================
+// CREATE PRODUCT
+// ===============================
 router.post(
-  "/",
-   upload.single("image"),
+  '/',
+  authMiddleware,
+  upload.single('image'),
   createProduct
 );
 
+// ===============================
+// UPDATE PRODUCT
+// ===============================
 router.put(
-  "/:id",
-  upload.single("image"),
+  '/:id',
+  authMiddleware,
+  upload.single('image'),
   updateProduct
 );
 
+// ===============================
+// DELETE PRODUCT
+// ===============================
 router.delete(
-  "/:id",
+  '/:id',
+  authMiddleware,
   deleteProduct
 );
 

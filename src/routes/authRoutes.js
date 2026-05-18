@@ -1,16 +1,21 @@
-const express = require("express");
+const express = require('express');
+const { register, login } = require('../controllers/authController');
+const { registerValidation } = require('../validations/authValidation');
+const { validationResult } = require('express-validator');
 
 const router = express.Router();
 
-const {
-  register,
-  login,
-} = require(
-  "../controllers/authController"
-);
+const validate = (req, res, next) => {
+  const errors = validationResult(req);
 
-router.post("/register", register);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
 
-router.post("/login", login);
+  next();
+};
+
+router.post('/register', registerValidation, validate, register);
+router.post('/login', login);
 
 module.exports = router;
